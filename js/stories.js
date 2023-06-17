@@ -50,3 +50,29 @@ function putStoriesOnPage() {
 
   $allStoriesList.show();
 }
+
+async function submitStory(evt) {
+  evt.preventDefault();
+
+  const author = $('#add-author').val();
+  const title = $('#story-title').val();
+  const url = $('#add-url').val();
+  const username = currentUser.username;
+  const storyData = {
+    title,
+    author,
+    url,
+    username
+  };
+
+  const story = await StoryList.addStory(currentUser, storyData);
+
+  const newStory = generateStoryMarkup(story);
+  $allStoriesList.prepend(newStory);
+
+  $storiesLoadingMsg.remove();
+
+  $storyForm.hide();
+}
+
+$storyForm.on("submit", submitStory);

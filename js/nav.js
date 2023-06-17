@@ -38,7 +38,7 @@ function updateNavOnLogin() {
 
 
 function showStoryForm(evt) {
-  console.debug("showStoryForm", evt);
+  console.log("showStoryForm", evt);
   hidePageComponents();
   $("#story-form").show();
 }
