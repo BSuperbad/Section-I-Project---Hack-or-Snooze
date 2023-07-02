@@ -60,6 +60,7 @@ function logout(evt) {
   console.debug("logout", evt);
   localStorage.clear();
   location.reload();
+  $favButton.hide();
 }
 
 $navLogOut.on("click", logout);
@@ -111,6 +112,7 @@ function updateUIOnUserLogin() {
   console.debug("updateUIOnUserLogin");
 
   $allStoriesList.show();
+  $('.fav_button').show();
 
   updateNavOnLogin();
 }

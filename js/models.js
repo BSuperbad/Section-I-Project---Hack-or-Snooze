@@ -69,6 +69,16 @@ class StoryList {
     // turn plain old story objects from API into instances of Story class
     const stories = response.data.stories.map(story => new Story(story));
 
+    if (currentUser) {
+      // Update currentUser's favorites
+      currentUser.favorites.forEach(favorite => {
+        const story = stories.find(story => story.storyId === favorite.storyId);
+        if (story) {
+          story.isFavorite = true;
+        }
+      });
+    }
+
     // build an instance of our own class using the new array of stories
     return new StoryList(stories);
   }
@@ -104,6 +114,22 @@ class StoryList {
     user.ownStories.unshift(story);
     return story;
   }
+
+  async deleteStory(user, storyId) {
+    await axios({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: 'DELETE',
+      data: {
+        token: user.loginToken,
+      },
+    });
+    this.stories = this.stories.filter(s => s.storyId !== storyId);
+    user.ownStories = user.ownStories.filter(s => s.storyId !== storyId);
+    user.favorites = user.favorites.filter(s => s.storyId !== storyId);
+
+  }
+
+
 }
 
 
@@ -237,4 +263,33 @@ class User {
       return null;
     }
   }
+
+  async addFavoriteStory(story) {
+    this.favorites.push(story);
+    await this.toggleFavorite("add", story);
+  }
+  async removeFavoriteStory(story) {
+    this.favorites = this.favorites.filter(favorite => favorite.storyId !== story.storyId);
+    await this.toggleFavorite("delete", story);
+  }
+
+  async toggleFavorite(state, story) {
+    const method = state === "add" ? "POST" : "DELETE";
+    const token = this.loginToken;
+    await axios({
+      url: `${BASE_URL}/users/${this.username}/favorites/${story.storyId}`,
+      method: method,
+      data: {
+        token
+      },
+    });
+  }
+
+
+  isFavorite(story) {
+    return this.favorites.some(s => (s.storyId === story.storyId));
+  }
+
+
+
 }

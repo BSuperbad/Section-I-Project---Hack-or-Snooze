@@ -8,8 +8,10 @@
 
 function navAllStories(evt) {
   console.debug("navAllStories", evt);
+  location.reload();
   hidePageComponents();
   putStoriesOnPage();
+  $favStoriesList.hide();
 }
 
 $body.on("click", "#nav-all", navAllStories);
@@ -35,12 +37,32 @@ function updateNavOnLogin() {
   $navUserProfile.text(`${currentUser.username}`).show();
 }
 
-
+/* Showing the story form when clicking on Submit Story */
 
 function showStoryForm(evt) {
-  console.log("showStoryForm", evt);
-  hidePageComponents();
-  $("#story-form").show();
+  if (!currentUser) {
+    alert('You must be logged in to submit a new story!')
+    return
+  } else {
+    console.log("showStoryForm", evt);
+    hidePageComponents();
+    $("#story-form").show();
+  }
 }
 
 $("#nav-story").on("click", showStoryForm);
+
+// Shows all currentUser's favorite stories upon click
+
+function showFavStories(evt) {
+  if (!currentUser) {
+    alert('You must be logged in to see your favorites!')
+    return
+  } else {
+    console.debug("showFavStories", evt);
+    hidePageComponents();
+    listFavStories();
+  }
+}
+
+$body.on("click", "#nav-fav", showFavStories);
